@@ -7,8 +7,8 @@ import GameControls from './components/GameControls';
 import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings } from './utils/sudoku';
 
 export default function App() {
-  const [board, setBoard] = useState([]);
-  const [originalBoard, setOriginalBoard] = useState([]);
+  const [board, setBoard] = useState(null);
+  const [originalBoard, setOriginalBoard] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
   const [difficulty, setDifficulty] = useState('medium');
   const [mistakes, setMistakes] = useState([]);
@@ -108,26 +108,32 @@ export default function App() {
         </View>
         
         <View style={styles.gameContainer}>
-          <SudokuBoard
-            board={board}
-            originalBoard={originalBoard}
-            selectedCell={selectedCell}
-            onCellPress={handleCellPress}
-            mistakes={mistakes}
-          />
-          
-          <NumberInput
-            onNumberPress={handleNumberInput}
-            selectedCell={selectedCell}
-          />
-          
-          <GameControls
-            onNewGame={startNewGame}
-            onDifficultyChange={handleDifficultyChange}
-            currentDifficulty={difficulty}
-            gameComplete={gameComplete}
-            mistakes={mistakeCount}
-          />
+          {board && originalBoard ? (
+            <>
+              <SudokuBoard
+                board={board}
+                originalBoard={originalBoard}
+                selectedCell={selectedCell}
+                onCellPress={handleCellPress}
+                mistakes={mistakes}
+              />
+              
+              <NumberInput
+                onNumberPress={handleNumberInput}
+                selectedCell={selectedCell}
+              />
+              
+              <GameControls
+                onNewGame={startNewGame}
+                onDifficultyChange={handleDifficultyChange}
+                currentDifficulty={difficulty}
+                gameComplete={gameComplete}
+                mistakes={mistakeCount}
+              />
+            </>
+          ) : (
+            <Text style={styles.loadingText}>Generating puzzle...</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -160,5 +166,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 20,
     alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 50,
   },
 });
