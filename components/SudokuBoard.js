@@ -34,6 +34,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, onCellPress, mistakes
         <Text style={[
           styles.cellText,
           isOriginal && styles.originalText,
+          !isOriginal && value !== 0 && styles.userText,
           isMistake && styles.mistakeText,
         ]}>
           {value !== 0 ? value : ''}
@@ -91,6 +92,10 @@ const styles = StyleSheet.create({
   originalText: {
     color: '#000',
     fontWeight: '800',
+  },
+  userText: {
+    color: '#333',
+    fontWeight: '300',
   },
   mistakeText: {
     color: '#d32f2f',
