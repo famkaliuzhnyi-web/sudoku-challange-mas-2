@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, Alert, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import SudokuBoard from './components/SudokuBoard';
 import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
+import MainMenuScreen from './components/MainMenuScreen';
+import PauseScreen from './components/PauseScreen';
 import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings } from './utils/sudoku';
+import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
+  const [screen, setScreen] = useState('menu'); // 'menu', 'game', 'pause'
   const [board, setBoard] = useState(null);
   const [originalBoard, setOriginalBoard] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
@@ -14,25 +18,61 @@ export default function App() {
   const [mistakes, setMistakes] = useState([]);
   const [mistakeCount, setMistakeCount] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  const [bestTimes, setBestTimes] = useState(getBestTimes());
+  const [startTime, setStartTime] = useState(null);
+  const [gameTime, setGameTime] = useState(0);
 
   useEffect(() => {
-    startNewGame();
-  }, []);
+    let interval;
+    if (screen === 'game' && startTime && !gameComplete) {
+      interval = setInterval(() => {
+        setGameTime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [screen, startTime, gameComplete]);
 
-  const startNewGame = () => {
+  const startNewGame = (selectedDifficulty = difficulty) => {
+    setDifficulty(selectedDifficulty);
     const difficultySettings = getDifficultySettings();
-    const newBoard = generateSudoku(difficultySettings[difficulty].difficulty);
+    const newBoard = generateSudoku(difficultySettings[selectedDifficulty].difficulty);
     setBoard(copyBoard(newBoard));
     setOriginalBoard(copyBoard(newBoard));
     setSelectedCell(null);
     setMistakes([]);
     setMistakeCount(0);
     setGameComplete(false);
+    setStartTime(Date.now());
+    setGameTime(0);
+    setScreen('game');
+  };
+
+  const restartGame = () => {
+    // Restart with the same board
+    setBoard(copyBoard(originalBoard));
+    setSelectedCell(null);
+    setMistakes([]);
+    setMistakeCount(0);
+    setGameComplete(false);
+    setStartTime(Date.now());
+    setGameTime(0);
+    setScreen('game');
   };
 
   const handleCellPress = (row, col) => {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
+    
+    // If clicking on a cell that already has a number, clear it
+    if (board[row][col] !== 0) {
+      const newBoard = copyBoard(board);
+      newBoard[row][col] = 0;
+      // Remove from mistakes if it was a mistake
+      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
+      setBoard(newBoard);
+      setSelectedCell(null);
+      return;
+    }
     
     setSelectedCell({ row, col });
   };
@@ -43,29 +83,22 @@ export default function App() {
     const { row, col } = selectedCell;
     const newBoard = copyBoard(board);
     
-    if (number === 0) {
-      // Clear cell
-      newBoard[row][col] = 0;
+    // Check if move is valid
+    if (isValidMove(newBoard, row, col, number)) {
+      newBoard[row][col] = number;
       // Remove from mistakes if it was a mistake
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
-      // Check if move is valid
-      if (isValidMove(newBoard, row, col, number)) {
-        newBoard[row][col] = number;
-        // Remove from mistakes if it was a mistake
-        setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-      } else {
-        // Invalid move - mark as mistake
-        newBoard[row][col] = number;
-        setMistakes(prev => {
-          const existing = prev.find(m => m.row === row && m.col === col);
-          if (!existing) {
-            setMistakeCount(count => count + 1);
-            return [...prev, { row, col }];
-          }
-          return prev;
-        });
-      }
+      // Invalid move - mark as mistake
+      newBoard[row][col] = number;
+      setMistakes(prev => {
+        const existing = prev.find(m => m.row === row && m.col === col);
+        if (!existing) {
+          setMistakeCount(count => count + 1);
+          return [...prev, { row, col }];
+        }
+        return prev;
+      });
     }
     
     setBoard(newBoard);
@@ -74,9 +107,23 @@ export default function App() {
     if (isSolved(newBoard)) {
       setGameComplete(true);
       setSelectedCell(null);
+      
+      // Calculate completion time and check for new record
+      const completionTime = Math.floor((Date.now() - startTime) / 1000);
+      const isNewRecord = setBestTime(difficulty, completionTime);
+      setBestTimes(getBestTimes());
+      
+      const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      };
+      
       Alert.alert(
         'Congratulations!',
-        `You solved the puzzle with ${mistakeCount} mistakes!`,
+        `You solved the puzzle in ${formatTime(completionTime)}!\n` +
+        `Mistakes: ${mistakeCount}` +
+        (isNewRecord ? '\n🎉 New best time!' : ''),
         [{ text: 'OK' }]
       );
     }
@@ -95,16 +142,71 @@ export default function App() {
         setMistakes([]);
         setMistakeCount(0);
         setGameComplete(false);
+        setStartTime(Date.now());
+        setGameTime(0);
       }, 100);
     }
   };
+
+  const handlePause = () => {
+    setScreen('pause');
+  };
+
+  const handleResume = () => {
+    setScreen('game');
+  };
+
+  const handleQuit = () => {
+    setScreen('menu');
+    setBoard(null);
+    setOriginalBoard(null);
+  };
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  if (screen === 'menu') {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <MainMenuScreen 
+          onStartGame={startNewGame}
+          bestTimes={bestTimes}
+        />
+      </>
+    );
+  }
+
+  if (screen === 'pause') {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <PauseScreen
+          onResume={handleResume}
+          onRestart={restartGame}
+          onQuit={handleQuit}
+        />
+      </>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity style={styles.pauseButton} onPress={handlePause}>
+              <Text style={styles.pauseButtonText}>⏸️ Pause</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.title}>Sudoku Challenge</Text>
+          <View style={styles.headerRight}>
+            <Text style={styles.timer}>{formatTime(gameTime)}</Text>
+          </View>
         </View>
         
         <View style={styles.gameContainer}>
@@ -124,7 +226,7 @@ export default function App() {
               />
               
               <GameControls
-                onNewGame={startNewGame}
+                onNewGame={() => startNewGame(difficulty)}
                 onDifficultyChange={handleDifficultyChange}
                 currentDifficulty={difficulty}
                 gameComplete={gameComplete}
@@ -150,11 +252,38 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 20,
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+  },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  pauseButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    backgroundColor: '#ff9800',
+    borderRadius: 6,
+  },
+  pauseButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  timer: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2196f3',
   },
   title: {
     fontSize: 28,
