@@ -25,9 +25,10 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Sudoku Challenge</Text>
+        <Text style={styles.title}>Sudoku</Text>
         
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Levels</Text>
           <View style={styles.difficultyContainer}>
             {Object.entries(difficulties).map(([key, config]) => 
               renderDifficultyButton(key, config)
@@ -36,6 +37,7 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Best Times</Text>
           <View style={styles.bestTimesContainer}>
             {Object.entries(difficulties).map(([key, config]) => (
               <View key={key} style={styles.bestTimeItem}>
@@ -58,40 +60,57 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 60,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 48,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 40,
+    marginBottom: 60,
+    textAlign: 'center',
   },
   section: {
     width: '100%',
-    marginBottom: 40,
+    marginBottom: 50,
+    alignItems: 'center',
   },
-
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   difficultyContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
+    gap: 20,
   },
   difficultyButton: {
     paddingVertical: 15,
-    paddingHorizontal: 30,
+    paddingHorizontal: 25,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   difficultyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#000',
+    color: '#333',
     textAlign: 'center',
   },
   bestTimesContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    gap: 30,
   },
   bestTimeItem: {
     alignItems: 'center',
@@ -100,12 +119,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   bestTimeValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
-    color: '#000',
+    color: '#2196f3',
+    textAlign: 'center',
   },
 });
 
