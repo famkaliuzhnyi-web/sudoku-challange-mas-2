@@ -36,16 +36,13 @@ const GameControls = ({ onNewGame, onDifficultyChange, currentDifficulty, gameCo
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusRow}>
-        <Text style={styles.statusText}>
-          Mistakes: {mistakes}
-        </Text>
-        {gameComplete && (
+      {gameComplete && (
+        <View style={styles.statusRow}>
           <Text style={styles.completedText}>
             🎉 Completed!
           </Text>
-        )}
-      </View>
+        </View>
+      )}
 
       <View style={styles.difficultyContainer}>
         <Text style={styles.sectionTitle}>Difficulty:</Text>
@@ -65,7 +62,7 @@ const GameControls = ({ onNewGame, onDifficultyChange, currentDifficulty, gameCo
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 12,
     alignItems: 'center',
   },
   statusRow: {
@@ -87,7 +84,7 @@ const styles = StyleSheet.create({
   },
   difficultyContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 16,

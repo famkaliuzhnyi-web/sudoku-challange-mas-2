@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   bestTimeValue: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#2196f3',
+    color: '#333',
     textAlign: 'center',
   },
 });

@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const SudokuBoard = ({ board, originalBoard, selectedCell, onCellPress, mistakes = [] }) => {
+const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, mistakes = [] }) => {
   const renderCell = (row, col) => {
     const value = board[row][col];
     const isOriginal = originalBoard[row][col] !== 0;
     const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
     const isMistake = mistakes.some(mistake => mistake.row === row && mistake.col === col);
+    const isNumberHighlighted = selectedNumber && value === selectedNumber;
     
     // Highlight cells in the same row, column, or 3x3 box as selected cell
     const isHighlighted = selectedCell && (
@@ -23,6 +24,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, onCellPress, mistakes
           styles.cell,
           isSelected && styles.selectedCell,
           isHighlighted && !isSelected && styles.highlightedCell,
+          isNumberHighlighted && !isSelected && styles.numberHighlightedCell,
           isMistake && styles.mistakeCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
@@ -67,8 +69,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cell: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     borderWidth: 0.5,
     borderColor: '#999',
     justifyContent: 'center',
@@ -81,11 +83,14 @@ const styles = StyleSheet.create({
   highlightedCell: {
     backgroundColor: '#f5f5f5',
   },
+  numberHighlightedCell: {
+    backgroundColor: '#fff9e6',
+  },
   mistakeCell: {
     backgroundColor: '#ffebee',
   },
   cellText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333',
   },

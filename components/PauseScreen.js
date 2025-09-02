@@ -58,19 +58,19 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 8,
-    backgroundColor: '#2196f3',
+    backgroundColor: '#d0d0d0',
     alignItems: 'center',
   },
   restartButton: {
-    backgroundColor: '#ff9800',
+    backgroundColor: '#d0d0d0',
   },
   quitButton: {
-    backgroundColor: '#f44336',
+    backgroundColor: '#d0d0d0',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: '#333',
   },
 });
 
