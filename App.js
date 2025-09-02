@@ -14,6 +14,7 @@ export default function App() {
   const [board, setBoard] = useState(null);
   const [originalBoard, setOriginalBoard] = useState(null);
   const [selectedCell, setSelectedCell] = useState(null);
+  const [selectedNumber, setSelectedNumber] = useState(null);
   const [difficulty, setDifficulty] = useState('medium');
   const [mistakes, setMistakes] = useState([]);
   const [mistakeCount, setMistakeCount] = useState(0);
@@ -39,6 +40,7 @@ export default function App() {
     setBoard(copyBoard(newBoard));
     setOriginalBoard(copyBoard(newBoard));
     setSelectedCell(null);
+    setSelectedNumber(null);
     setMistakes([]);
     setMistakeCount(0);
     setGameComplete(false);
@@ -51,6 +53,7 @@ export default function App() {
     // Restart with the same board
     setBoard(copyBoard(originalBoard));
     setSelectedCell(null);
+    setSelectedNumber(null);
     setMistakes([]);
     setMistakeCount(0);
     setGameComplete(false);
@@ -71,6 +74,7 @@ export default function App() {
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
       setBoard(newBoard);
       setSelectedCell(null);
+      setSelectedNumber(null);
       return;
     }
     
@@ -78,6 +82,7 @@ export default function App() {
   };
 
   const handleNumberInput = (number) => {
+    setSelectedNumber(number);
     if (!selectedCell) return;
     
     const { row, col } = selectedCell;
@@ -107,6 +112,7 @@ export default function App() {
     if (isSolved(newBoard)) {
       setGameComplete(true);
       setSelectedCell(null);
+      setSelectedNumber(null);
       
       // Calculate completion time and check for new record
       const completionTime = Math.floor((Date.now() - startTime) / 1000);
@@ -139,6 +145,7 @@ export default function App() {
         setBoard(copyBoard(newBoard));
         setOriginalBoard(copyBoard(newBoard));
         setSelectedCell(null);
+        setSelectedNumber(null);
         setMistakes([]);
         setMistakeCount(0);
         setGameComplete(false);
@@ -203,7 +210,7 @@ export default function App() {
               <Text style={styles.pauseButtonText}>⏸️ Pause</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.title}>Sudoku Challenge</Text>
+          <Text style={styles.title}>Sudoku</Text>
           <View style={styles.headerRight}>
             <Text style={styles.timer}>{formatTime(gameTime)}</Text>
           </View>
@@ -216,6 +223,7 @@ export default function App() {
                 board={board}
                 originalBoard={originalBoard}
                 selectedCell={selectedCell}
+                selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
                 mistakes={mistakes}
               />
@@ -223,6 +231,7 @@ export default function App() {
               <NumberInput
                 onNumberPress={handleNumberInput}
                 selectedCell={selectedCell}
+                selectedNumber={selectedNumber}
               />
               
               <GameControls
@@ -255,8 +264,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
@@ -286,14 +295,14 @@ const styles = StyleSheet.create({
     color: '#2196f3',
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
   },
   gameContainer: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingHorizontal: 12,
+    paddingTop: 15,
     alignItems: 'center',
   },
   loadingText: {

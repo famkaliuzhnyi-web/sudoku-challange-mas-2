@@ -1,32 +1,35 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const NumberInput = ({ onNumberPress, selectedCell }) => {
+const NumberInput = ({ onNumberPress, selectedCell, selectedNumber }) => {
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#e91e63'];
 
   return (
     <View style={styles.container}>
       <View style={styles.numberGrid}>
-        {numbers.map((number, index) => (
-          <TouchableOpacity
-            key={number}
-            style={[
-              styles.numberButton,
-              !selectedCell && styles.disabledButton,
-              { backgroundColor: colors[index] }
-            ]}
-            onPress={() => onNumberPress(number)}
-            disabled={!selectedCell}
-          >
-            <Text style={[
-              styles.numberText,
-              { color: '#fff' }
-            ]}>
-              {number}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {numbers.map((number, index) => {
+          const isSelectedNumber = selectedNumber === number;
+          return (
+            <TouchableOpacity
+              key={number}
+              style={[
+                styles.numberButton,
+                !selectedCell && styles.disabledButton,
+                { backgroundColor: isSelectedNumber ? '#fff9e6' : colors[index] }
+              ]}
+              onPress={() => onNumberPress(number)}
+              disabled={!selectedCell}
+            >
+              <Text style={[
+                styles.numberText,
+                { color: isSelectedNumber ? '#333' : '#fff' }
+              ]}>
+                {number}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -35,7 +38,7 @@ const NumberInput = ({ onNumberPress, selectedCell }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 15,
   },
   numberGrid: {
     flexDirection: 'row',
@@ -44,10 +47,10 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   numberButton: {
-    width: 35,
-    height: 50,
-    margin: 2,
-    borderRadius: 8,
+    width: 32,
+    height: 45,
+    margin: 1,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: '#ddd',
     justifyContent: 'center',
@@ -59,7 +62,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   numberText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: '#333',
   },
