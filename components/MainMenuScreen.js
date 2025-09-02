@@ -22,13 +22,6 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
     </TouchableOpacity>
   );
 
-  const renderScoreRow = (key, config) => (
-    <View key={key} style={styles.scoreRow}>
-      <Text style={styles.scoreDifficulty}>{config.name}</Text>
-      <Text style={styles.scoreTime}>{formatTime(bestTimes[key])}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -43,15 +36,13 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Best Times</Text>
-          <View style={styles.scoresContainer}>
-            <View style={styles.scoreHeader}>
-              <Text style={styles.scoreHeaderText}>Difficulty</Text>
-              <Text style={styles.scoreHeaderText}>Best Time</Text>
-            </View>
-            {Object.entries(difficulties).map(([key, config]) => 
-              renderScoreRow(key, config)
-            )}
+          <View style={styles.bestTimesContainer}>
+            {Object.entries(difficulties).map(([key, config]) => (
+              <View key={key} style={styles.bestTimeItem}>
+                <Text style={styles.bestTimeLabel}>{config.name}</Text>
+                <Text style={styles.bestTimeValue}>{formatTime(bestTimes[key])}</Text>
+              </View>
+            ))}
           </View>
         </View>
       </View>
@@ -80,16 +71,11 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 40,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+
   difficultyContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    gap: 15,
   },
   difficultyButton: {
     paddingVertical: 15,
@@ -101,35 +87,25 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
   },
-  scoresContainer: {
-    padding: 20,
-  },
-  scoreHeader: {
+  bestTimesContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  scoreHeaderText: {
+  bestTimeItem: {
+    alignItems: 'center',
+  },
+  bestTimeLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666',
-  },
-  scoreRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  scoreDifficulty: {
-    fontSize: 16,
     color: '#333',
+    marginBottom: 5,
   },
-  scoreTime: {
+  bestTimeValue: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#2196f3',
+    color: '#000',
   },
 });
 
