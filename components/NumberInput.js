@@ -14,15 +14,14 @@ const NumberInput = ({ onNumberPress, selectedCell }) => {
             style={[
               styles.numberButton,
               !selectedCell && styles.disabledButton,
-              { backgroundColor: selectedCell ? colors[index] : '#e0e0e0' }
+              { backgroundColor: colors[index] }
             ]}
             onPress={() => onNumberPress(number)}
             disabled={!selectedCell}
           >
             <Text style={[
               styles.numberText,
-              !selectedCell && styles.disabledText,
-              { color: selectedCell ? '#fff' : '#999' }
+              { color: '#fff' }
             ]}>
               {number}
             </Text>
@@ -40,14 +39,14 @@ const styles = StyleSheet.create({
   },
   numberGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     justifyContent: 'center',
-    maxWidth: 240,
+    maxWidth: '100%',
   },
   numberButton: {
-    width: 60,
-    height: 60,
-    margin: 5,
+    width: 35,
+    height: 50,
+    margin: 2,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -65,11 +64,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   disabledButton: {
-    backgroundColor: '#e0e0e0',
-    opacity: 0.5,
-  },
-  disabledText: {
-    color: '#999',
+    opacity: 0.6,
   },
 });
 
