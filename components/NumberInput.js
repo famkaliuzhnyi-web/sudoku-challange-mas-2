@@ -29,22 +29,6 @@ const NumberInput = ({ onNumberPress, selectedCell }) => {
           </TouchableOpacity>
         ))}
       </View>
-      
-      <TouchableOpacity
-        style={[
-          styles.clearButton,
-          !selectedCell && styles.disabledButton
-        ]}
-        onPress={() => onNumberPress(0)}
-        disabled={!selectedCell}
-      >
-        <Text style={[
-          styles.clearText,
-          !selectedCell && styles.disabledText
-        ]}>
-          Clear
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -79,25 +63,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     color: '#333',
-  },
-  clearButton: {
-    width: 120,
-    height: 50,
-    marginTop: 10,
-    borderRadius: 8,
-    backgroundColor: '#ff6b6b',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  clearText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
   },
   disabledButton: {
     backgroundColor: '#e0e0e0',

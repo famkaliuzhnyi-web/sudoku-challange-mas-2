@@ -63,7 +63,7 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#e8e8e8',
   },
   content: {
     flex: 1,

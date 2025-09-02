@@ -28,7 +28,7 @@ const PauseScreen = ({ onResume, onRestart, onQuit }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: '#e8e8e8',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -63,6 +63,17 @@ export default function App() {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
     
+    // If clicking on a cell that already has a number, clear it
+    if (board[row][col] !== 0) {
+      const newBoard = copyBoard(board);
+      newBoard[row][col] = 0;
+      // Remove from mistakes if it was a mistake
+      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
+      setBoard(newBoard);
+      setSelectedCell(null);
+      return;
+    }
+    
     setSelectedCell({ row, col });
   };
 
@@ -72,29 +83,22 @@ export default function App() {
     const { row, col } = selectedCell;
     const newBoard = copyBoard(board);
     
-    if (number === 0) {
-      // Clear cell
-      newBoard[row][col] = 0;
+    // Check if move is valid
+    if (isValidMove(newBoard, row, col, number)) {
+      newBoard[row][col] = number;
       // Remove from mistakes if it was a mistake
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
-      // Check if move is valid
-      if (isValidMove(newBoard, row, col, number)) {
-        newBoard[row][col] = number;
-        // Remove from mistakes if it was a mistake
-        setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-      } else {
-        // Invalid move - mark as mistake
-        newBoard[row][col] = number;
-        setMistakes(prev => {
-          const existing = prev.find(m => m.row === row && m.col === col);
-          if (!existing) {
-            setMistakeCount(count => count + 1);
-            return [...prev, { row, col }];
-          }
-          return prev;
-        });
-      }
+      // Invalid move - mark as mistake
+      newBoard[row][col] = number;
+      setMistakes(prev => {
+        const existing = prev.find(m => m.row === row && m.col === col);
+        if (!existing) {
+          setMistakeCount(count => count + 1);
+          return [...prev, { row, col }];
+        }
+        return prev;
+      });
     }
     
     setBoard(newBoard);
