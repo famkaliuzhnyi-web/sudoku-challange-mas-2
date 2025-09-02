@@ -35,7 +35,6 @@ const MainMenuScreen = ({ onStartGame, bestTimes }) => {
         <Text style={styles.title}>Sudoku Challenge</Text>
         
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Choose Difficulty Level</Text>
           <View style={styles.difficultyContainer}>
             {Object.entries(difficulties).map(([key, config]) => 
               renderDifficultyButton(key, config)
@@ -93,32 +92,17 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   difficultyButton: {
-    width: 200,
     paddingVertical: 15,
     paddingHorizontal: 30,
-    borderRadius: 10,
-    backgroundColor: '#2196f3',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   difficultyText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#fff',
+    color: '#000',
     textAlign: 'center',
   },
   scoresContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
     padding: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
   },
   scoreHeader: {
     flexDirection: 'row',
