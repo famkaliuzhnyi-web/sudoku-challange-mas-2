@@ -148,6 +148,22 @@ export default function App() {
     }
   };
 
+  const handleDelete = () => {
+    if (!selectedCell) return;
+    
+    const { row, col } = selectedCell;
+    const newBoard = copyBoard(board);
+    
+    // Clear the cell (set to 0, which represents empty)
+    newBoard[row][col] = 0;
+    
+    // Remove from mistakes if it was a mistake
+    setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
+    
+    setBoard(newBoard);
+    setSelectedNumber(null);
+  };
+
   const handleDifficultyChange = (newDifficulty) => {
     if (newDifficulty !== difficulty) {
       setDifficulty(newDifficulty);
@@ -263,6 +279,7 @@ export default function App() {
                 
                 <NumberInput
                   onNumberPress={handleNumberInput}
+                  onDelete={handleDelete}
                   selectedCell={selectedCell}
                   selectedNumber={selectedNumber}
                   noteMode={noteMode}
