@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -67,44 +67,21 @@ export default function App() {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
     
-    // If clicking on a cell that already has a definitive number, clear it
-    const cellValue = board[row][col];
-    if (typeof cellValue === 'number' && cellValue !== 0) {
-      const newBoard = copyBoard(board);
-      newBoard[row][col] = 0;
-      // Remove from mistakes if it was a mistake
-      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-      setBoard(newBoard);
-      setSelectedCell(null);
-      return;
-    }
-    
     // If no number is selected, just select the cell
     if (!selectedNumber) {
       setSelectedCell({ row, col });
       return;
     }
     
-    // Place the selected number
+    // Toggle the selected number in the cell
     const newBoard = copyBoard(board);
+    const currentCellValue = board[row][col];
     
-    // Check if move is valid
-    if (isValidMove(newBoard, row, col, selectedNumber)) {
-      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
-      // Remove from mistakes if it was a mistake
-      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-    } else {
-      // Invalid move - mark as mistake
-      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
-      setMistakes(prev => {
-        const existing = prev.find(m => m.row === row && m.col === col);
-        if (!existing) {
-          setMistakeCount(count => count + 1);
-          return [...prev, { row, col }];
-        }
-        return prev;
-      });
-    }
+    // Toggle the number in the cell (add if not present, remove if present)
+    newBoard[row][col] = toggleNumberInCell(currentCellValue, selectedNumber);
+    
+    // Remove from mistakes if it was a mistake (since we're allowing notes now)
+    setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     
     setBoard(newBoard);
     setSelectedCell(null);
