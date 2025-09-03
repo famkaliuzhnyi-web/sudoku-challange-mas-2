@@ -69,9 +69,9 @@ export default function App() {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
     
-    // If clicking on a cell that already has a definitive number, clear it
+    // If clicking on a cell that has any content, clear it
     const cellValue = board[row][col];
-    if (typeof cellValue === 'number' && cellValue !== 0) {
+    if (cellValue !== 0 && (typeof cellValue === 'number' || (Array.isArray(cellValue) && cellValue.length > 0))) {
       const newBoard = copyBoard(board);
       newBoard[row][col] = 0;
       // Remove from mistakes if it was a mistake
@@ -100,14 +100,20 @@ export default function App() {
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
       // Answer mode: place definitive number
+      // If the cell currently has this number as a note, convert all notes to just this number
+      if (Array.isArray(currentCellValue) && currentCellValue.includes(number)) {
+        newBoard[row][col] = setDefinitiveNumber(number);
+      } else {
+        // Place the number directly
+        newBoard[row][col] = setDefinitiveNumber(number);
+      }
+      
       // Check if move is valid
       if (isValidMove(newBoard, row, col, number)) {
-        newBoard[row][col] = setDefinitiveNumber(number);
         // Remove from mistakes if it was a mistake
         setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
       } else {
         // Invalid move - mark as mistake
-        newBoard[row][col] = setDefinitiveNumber(number);
         setMistakes(prev => {
           const existing = prev.find(m => m.row === row && m.col === col);
           if (!existing) {
