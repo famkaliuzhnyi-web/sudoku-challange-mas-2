@@ -2,13 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getCellDisplayValue, isCellEmpty, isCellMultiValue } from '../utils/sudoku';
 
-const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, mistakes = [] }) => {
+const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress }) => {
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
     const isOriginal = originalBoard[row][col] !== 0;
     const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
-    const isMistake = mistakes.some(mistake => mistake.row === row && mistake.col === col);
     const isEmpty = isCellEmpty(cellValue);
     const isMultiValue = isCellMultiValue(cellValue);
     
@@ -44,7 +43,6 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
             styles.cellText,
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
-            isMistake && styles.mistakeText,
           ]}>
             {displayValue}
           </Text>
@@ -59,7 +57,6 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
           styles.cell,
           isSelected && styles.selectedCell,
           isNumberHighlighted && !isSelected && styles.numberHighlightedCell,
-          isMistake && styles.mistakeCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
           row % 3 === 2 && row !== 8 && styles.bottomBorder,
@@ -113,9 +110,6 @@ const styles = StyleSheet.create({
   numberHighlightedCell: {
     backgroundColor: '#e0e0e0',
   },
-  mistakeCell: {
-    backgroundColor: '#ffebee',
-  },
   cellText: {
     fontSize: 16,
     fontWeight: '600',
@@ -128,9 +122,6 @@ const styles = StyleSheet.create({
   userText: {
     color: '#333',
     fontWeight: '300',
-  },
-  mistakeText: {
-    color: '#d32f2f',
   },
   rightBorder: {
     borderRightWidth: 2,

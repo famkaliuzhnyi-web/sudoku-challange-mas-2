@@ -16,8 +16,7 @@ export default function App() {
   const [selectedCell, setSelectedCell] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [difficulty, setDifficulty] = useState('medium');
-  const [mistakes, setMistakes] = useState([]);
-  const [mistakeCount, setMistakeCount] = useState(0);
+
   const [gameComplete, setGameComplete] = useState(false);
   const [bestTimes, setBestTimes] = useState(getBestTimes());
   const [startTime, setStartTime] = useState(null);
@@ -42,8 +41,6 @@ export default function App() {
     setOriginalBoard(copyBoard(newBoard));
     setSelectedCell(null);
     setSelectedNumber(null);
-    setMistakes([]);
-    setMistakeCount(0);
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
@@ -55,8 +52,6 @@ export default function App() {
     setBoard(copyBoard(originalBoard));
     setSelectedCell(null);
     setSelectedNumber(null);
-    setMistakes([]);
-    setMistakeCount(0);
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
@@ -80,9 +75,6 @@ export default function App() {
     // Toggle the number in the cell (add if not present, remove if present)
     newBoard[row][col] = toggleNumberInCell(currentCellValue, selectedNumber);
     
-    // Remove from mistakes if it was a mistake (since we're allowing notes now)
-    setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-    
     setBoard(newBoard);
     setSelectedCell(null);
     
@@ -105,8 +97,7 @@ export default function App() {
       
       Alert.alert(
         'Congratulations!',
-        `You solved the puzzle in ${formatTime(completionTime)}!\n` +
-        `Mistakes: ${mistakeCount}` +
+        `You solved the puzzle in ${formatTime(completionTime)}!` +
         (isNewRecord ? '\n🎉 New best time!' : ''),
         [{ text: 'OK' }]
       );
@@ -128,8 +119,6 @@ export default function App() {
         setOriginalBoard(copyBoard(newBoard));
         setSelectedCell(null);
         setSelectedNumber(null);
-        setMistakes([]);
-        setMistakeCount(0);
         setGameComplete(false);
         setStartTime(Date.now());
         setGameTime(0);
@@ -207,7 +196,6 @@ export default function App() {
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
-                mistakes={mistakes}
               />
               
               <View style={styles.inputSection}>
@@ -223,7 +211,6 @@ export default function App() {
                 onDifficultyChange={handleDifficultyChange}
                 currentDifficulty={difficulty}
                 gameComplete={gameComplete}
-                mistakes={mistakeCount}
               />
             </>
           ) : (
