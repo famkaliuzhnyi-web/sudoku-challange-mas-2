@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue } from '../utils/sudoku';
+import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue, getNumberColor } from '../utils/sudoku';
 
 const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [] }) => {
   const renderCell = (row, col) => {
@@ -59,7 +59,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         style={[
           styles.cell,
           isSelected && styles.selectedCell,
-          isCompletedNumber && !isSelected && styles.completedNumberCell,
+          isCompletedNumber && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
           isNumberHighlighted && !isSelected && !isCompletedNumber && styles.numberHighlightedCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   completedNumberText: {
-    color: '#155724',
+    color: '#fff',
     fontWeight: '600',
   },
   rightBorder: {

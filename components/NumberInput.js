@@ -17,13 +17,13 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, completedNum
               key={number}
               style={[
                 styles.numberButton,
-                { backgroundColor: isSelectedNumber ? '#f0f0f0' : (isCompleted ? '#d4edda' : colors[index]) }
+                { backgroundColor: isSelectedNumber ? '#f0f0f0' : colors[index] }
               ]}
               onPress={() => onNumberPress(number)}
             >
               <Text style={[
                 styles.numberText,
-                { color: isSelectedNumber ? '#333' : (isCompleted ? '#155724' : '#fff') }
+                { color: isSelectedNumber ? '#333' : '#fff' }
               ]}>
                 {number}
               </Text>

@@ -282,6 +282,19 @@ export function getCompletedNumbers(board) {
 }
 
 /**
+ * Get the color for a specific number (1-9)
+ * @param {number} number - Number (1-9)
+ * @returns {string} Color hex code
+ */
+export function getNumberColor(number) {
+  const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#e91e63'];
+  if (number >= 1 && number <= 9) {
+    return colors[number - 1];
+  }
+  return '#333'; // Default color
+}
+
+/**
  * Get difficulty settings
  * @returns {Object} Difficulty configurations
  */
