@@ -74,6 +74,89 @@ function removeCells(board, cellsToRemove) {
 }
 
 /**
+ * Get the definitive number from a cell (single number or null if multiple/empty)
+ * @param {number|Array} cellValue - Cell value (number, array, or 0)
+ * @returns {number|null} Single number or null
+ */
+function getCellDefinitiveValue(cellValue) {
+  if (typeof cellValue === 'number' && cellValue !== 0) {
+    return cellValue;
+  }
+  if (Array.isArray(cellValue) && cellValue.length === 1) {
+    return cellValue[0];
+  }
+  return null;
+}
+
+/**
+ * Check if a cell is empty (no numbers)
+ * @param {number|Array} cellValue - Cell value
+ * @returns {boolean} True if cell is empty
+ */
+export function isCellEmpty(cellValue) {
+  return cellValue === 0 || (Array.isArray(cellValue) && cellValue.length === 0);
+}
+
+/**
+ * Check if a cell has multiple numbers (notes)
+ * @param {number|Array} cellValue - Cell value
+ * @returns {boolean} True if cell has multiple numbers
+ */
+export function isCellMultiValue(cellValue) {
+  return Array.isArray(cellValue) && cellValue.length > 1;
+}
+
+/**
+ * Toggle a number in a cell (add if not present, remove if present)
+ * @param {number|Array} cellValue - Current cell value
+ * @param {number} num - Number to toggle
+ * @returns {number|Array} New cell value
+ */
+export function toggleNumberInCell(cellValue, num) {
+  // If cell is empty or has a single definitive number, start with notes array
+  if (cellValue === 0 || typeof cellValue === 'number') {
+    return [num];
+  }
+  
+  // If cell has notes, toggle the number
+  if (Array.isArray(cellValue)) {
+    const index = cellValue.indexOf(num);
+    if (index === -1) {
+      // Add number
+      const newArray = [...cellValue, num].sort((a, b) => a - b);
+      return newArray;
+    } else {
+      // Remove number
+      const newArray = cellValue.filter(n => n !== num);
+      return newArray.length === 0 ? 0 : newArray;
+    }
+  }
+  
+  return cellValue;
+}
+
+/**
+ * Set a definitive number in a cell (replaces any notes)
+ * @param {number} num - Number to set
+ * @returns {number} The definitive number
+ */
+export function setDefinitiveNumber(num) {
+  return num;
+}
+
+/**
+ * Get display value for a cell
+ * @param {number|Array} cellValue - Cell value
+ * @returns {number|Array} Value to display
+ */
+export function getCellDisplayValue(cellValue) {
+  if (cellValue === 0) return 0;
+  if (typeof cellValue === 'number') return cellValue;
+  if (Array.isArray(cellValue)) return cellValue;
+  return 0;
+}
+
+/**
  * Check if a move is valid according to Sudoku rules
  * @param {Array} board - Current board state
  * @param {number} row - Row index
@@ -84,12 +167,18 @@ function removeCells(board, cellsToRemove) {
 export function isValidMove(board, row, col, num) {
   // Check row
   for (let c = 0; c < 9; c++) {
-    if (board[row][c] === num) return false;
+    if (c !== col) {
+      const cellValue = getCellDefinitiveValue(board[row][c]);
+      if (cellValue === num) return false;
+    }
   }
   
   // Check column
   for (let r = 0; r < 9; r++) {
-    if (board[r][col] === num) return false;
+    if (r !== row) {
+      const cellValue = getCellDefinitiveValue(board[r][col]);
+      if (cellValue === num) return false;
+    }
   }
   
   // Check 3x3 box
@@ -98,7 +187,10 @@ export function isValidMove(board, row, col, num) {
   
   for (let r = boxRow; r < boxRow + 3; r++) {
     for (let c = boxCol; c < boxCol + 3; c++) {
-      if (board[r][c] === num) return false;
+      if (r !== row || c !== col) {
+        const cellValue = getCellDefinitiveValue(board[r][c]);
+        if (cellValue === num) return false;
+      }
     }
   }
   
@@ -113,16 +205,20 @@ export function isValidMove(board, row, col, num) {
 export function isSolved(board) {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
-      const num = board[row][col];
-      if (num === 0) return false;
+      const cellValue = board[row][col];
+      const definitiveValue = getCellDefinitiveValue(cellValue);
+      
+      // Cell must have exactly one number
+      if (definitiveValue === null) return false;
       
       // Temporarily remove the number to check validity
+      const originalValue = board[row][col];
       board[row][col] = 0;
-      if (!isValidMove(board, row, col, num)) {
-        board[row][col] = num;
+      if (!isValidMove(board, row, col, definitiveValue)) {
+        board[row][col] = originalValue;
         return false;
       }
-      board[row][col] = num;
+      board[row][col] = originalValue;
     }
   }
   return true;
