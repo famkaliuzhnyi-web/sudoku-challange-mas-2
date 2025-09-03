@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, toggleNumberInCell, setDefinitiveNumber, getCellDisplayValue } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -22,7 +22,7 @@ export default function App() {
   const [bestTimes, setBestTimes] = useState(getBestTimes());
   const [startTime, setStartTime] = useState(null);
   const [gameTime, setGameTime] = useState(0);
-  const [noteMode, setNoteMode] = useState(false); // New state for note mode
+
 
   useEffect(() => {
     let interval;
@@ -47,7 +47,6 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
-    setNoteMode(false);
     setScreen('game');
   };
 
@@ -61,7 +60,6 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
-    setNoteMode(false);
     setScreen('game');
   };
 
@@ -78,51 +76,41 @@ export default function App() {
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
       setBoard(newBoard);
       setSelectedCell(null);
-      setSelectedNumber(null);
       return;
     }
     
-    setSelectedCell({ row, col });
-  };
-
-  const handleNumberInput = (number) => {
-    setSelectedNumber(number);
-    if (!selectedCell) return;
+    // If no number is selected, just select the cell
+    if (!selectedNumber) {
+      setSelectedCell({ row, col });
+      return;
+    }
     
-    const { row, col } = selectedCell;
+    // Place the selected number
     const newBoard = copyBoard(board);
-    const currentCellValue = board[row][col];
     
-    if (noteMode) {
-      // Note mode: toggle number in/out of notes
-      newBoard[row][col] = toggleNumberInCell(currentCellValue, number);
-      // Remove from mistakes since we're just adding/removing notes
+    // Check if move is valid
+    if (isValidMove(newBoard, row, col, selectedNumber)) {
+      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
+      // Remove from mistakes if it was a mistake
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
-      // Answer mode: place definitive number
-      // Check if move is valid
-      if (isValidMove(newBoard, row, col, number)) {
-        newBoard[row][col] = setDefinitiveNumber(number);
-        // Remove from mistakes if it was a mistake
-        setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-      } else {
-        // Invalid move - mark as mistake
-        newBoard[row][col] = setDefinitiveNumber(number);
-        setMistakes(prev => {
-          const existing = prev.find(m => m.row === row && m.col === col);
-          if (!existing) {
-            setMistakeCount(count => count + 1);
-            return [...prev, { row, col }];
-          }
-          return prev;
-        });
-      }
+      // Invalid move - mark as mistake
+      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
+      setMistakes(prev => {
+        const existing = prev.find(m => m.row === row && m.col === col);
+        if (!existing) {
+          setMistakeCount(count => count + 1);
+          return [...prev, { row, col }];
+        }
+        return prev;
+      });
     }
     
     setBoard(newBoard);
+    setSelectedCell(null);
     
-    // Check if game is complete (only if not in note mode)
-    if (!noteMode && isSolved(newBoard)) {
+    // Check if game is complete
+    if (isSolved(newBoard)) {
       setGameComplete(true);
       setSelectedCell(null);
       setSelectedNumber(null);
@@ -146,6 +134,10 @@ export default function App() {
         [{ text: 'OK' }]
       );
     }
+  };
+
+  const handleNumberInput = (number) => {
+    setSelectedNumber(number);
   };
 
   const handleDifficultyChange = (newDifficulty) => {
@@ -242,30 +234,10 @@ export default function App() {
               />
               
               <View style={styles.inputSection}>
-                <View style={styles.modeToggle}>
-                  <TouchableOpacity
-                    style={[styles.modeButton, !noteMode && styles.modeButtonActive]}
-                    onPress={() => setNoteMode(false)}
-                  >
-                    <Text style={[styles.modeButtonText, !noteMode && styles.modeButtonTextActive]}>
-                      Answer
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.modeButton, noteMode && styles.modeButtonActive]}
-                    onPress={() => setNoteMode(true)}
-                  >
-                    <Text style={[styles.modeButtonText, noteMode && styles.modeButtonTextActive]}>
-                      Notes
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                
                 <NumberInput
                   onNumberPress={handleNumberInput}
                   selectedCell={selectedCell}
                   selectedNumber={selectedNumber}
-                  noteMode={noteMode}
                 />
               </View>
               
@@ -354,35 +326,5 @@ const styles = StyleSheet.create({
   inputSection: {
     alignItems: 'center',
     width: '100%',
-  },
-  modeToggle: {
-    flexDirection: 'row',
-    marginVertical: 15,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 2,
-  },
-  modeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 6,
-    backgroundColor: 'transparent',
-  },
-  modeButtonActive: {
-    backgroundColor: '#fff',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-  },
-  modeButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#666',
-  },
-  modeButtonTextActive: {
-    color: '#333',
-    fontWeight: '600',
   },
 });

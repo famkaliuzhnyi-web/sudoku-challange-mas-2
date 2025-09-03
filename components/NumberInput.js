@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, noteMode = false }) => {
+const NumberInput = ({ onNumberPress, selectedCell, selectedNumber }) => {
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#e91e63'];
 
@@ -15,12 +15,9 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, noteMode = f
               key={number}
               style={[
                 styles.numberButton,
-                !selectedCell && styles.disabledButton,
-                { backgroundColor: isSelectedNumber ? '#fff9e6' : colors[index] },
-                noteMode && styles.noteModeBorder
+                { backgroundColor: isSelectedNumber ? '#f0f0f0' : colors[index] }
               ]}
               onPress={() => onNumberPress(number)}
-              disabled={!selectedCell}
             >
               <Text style={[
                 styles.numberText,
@@ -67,14 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
-  noteModeBorder: {
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: '#999',
-  },
+
 });
 
 export default NumberInput;
