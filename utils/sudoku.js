@@ -248,6 +248,40 @@ export function copyBoard(board) {
 }
 
 /**
+ * Count occurrences of each number on the board
+ * @param {Array} board - Current board state
+ * @returns {Object} Object with counts for each number (1-9)
+ */
+export function getNumberCounts(board) {
+  const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+  
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cellValue = board[row][col];
+      const definitiveValue = getCellDefinitiveValue(cellValue);
+      
+      if (definitiveValue !== null && definitiveValue >= 1 && definitiveValue <= 9) {
+        counts[definitiveValue]++;
+      }
+    }
+  }
+  
+  return counts;
+}
+
+/**
+ * Get array of numbers that are completed (appear 9 times) on the board
+ * @param {Array} board - Current board state
+ * @returns {Array} Array of completed numbers
+ */
+export function getCompletedNumbers(board) {
+  const counts = getNumberCounts(board);
+  return Object.keys(counts)
+    .filter(num => counts[num] === 9)
+    .map(num => parseInt(num));
+}
+
+/**
  * Get difficulty settings
  * @returns {Object} Difficulty configurations
  */
