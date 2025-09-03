@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { getDifficultySettings } from '../utils/sudoku';
 
-const GameControls = ({ onNewGame, onDifficultyChange, currentDifficulty, gameComplete, mistakes }) => {
+const GameControls = ({ onNewGame, onDifficultyChange, currentDifficulty, gameComplete }) => {
   const difficulties = getDifficultySettings();
 
   const handleNewGame = () => {

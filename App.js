@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -16,8 +16,7 @@ export default function App() {
   const [selectedCell, setSelectedCell] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [difficulty, setDifficulty] = useState('medium');
-  const [mistakes, setMistakes] = useState([]);
-  const [mistakeCount, setMistakeCount] = useState(0);
+
   const [gameComplete, setGameComplete] = useState(false);
   const [bestTimes, setBestTimes] = useState(getBestTimes());
   const [startTime, setStartTime] = useState(null);
@@ -42,8 +41,6 @@ export default function App() {
     setOriginalBoard(copyBoard(newBoard));
     setSelectedCell(null);
     setSelectedNumber(null);
-    setMistakes([]);
-    setMistakeCount(0);
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
@@ -55,8 +52,6 @@ export default function App() {
     setBoard(copyBoard(originalBoard));
     setSelectedCell(null);
     setSelectedNumber(null);
-    setMistakes([]);
-    setMistakeCount(0);
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
@@ -67,44 +62,18 @@ export default function App() {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
     
-    // If clicking on a cell that already has a definitive number, clear it
-    const cellValue = board[row][col];
-    if (typeof cellValue === 'number' && cellValue !== 0) {
-      const newBoard = copyBoard(board);
-      newBoard[row][col] = 0;
-      // Remove from mistakes if it was a mistake
-      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-      setBoard(newBoard);
-      setSelectedCell(null);
-      return;
-    }
-    
     // If no number is selected, just select the cell
     if (!selectedNumber) {
       setSelectedCell({ row, col });
       return;
     }
     
-    // Place the selected number
+    // Toggle the selected number in the cell
     const newBoard = copyBoard(board);
+    const currentCellValue = board[row][col];
     
-    // Check if move is valid
-    if (isValidMove(newBoard, row, col, selectedNumber)) {
-      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
-      // Remove from mistakes if it was a mistake
-      setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
-    } else {
-      // Invalid move - mark as mistake
-      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
-      setMistakes(prev => {
-        const existing = prev.find(m => m.row === row && m.col === col);
-        if (!existing) {
-          setMistakeCount(count => count + 1);
-          return [...prev, { row, col }];
-        }
-        return prev;
-      });
-    }
+    // Toggle the number in the cell (add if not present, remove if present)
+    newBoard[row][col] = toggleNumberInCell(currentCellValue, selectedNumber);
     
     setBoard(newBoard);
     setSelectedCell(null);
@@ -128,8 +97,7 @@ export default function App() {
       
       Alert.alert(
         'Congratulations!',
-        `You solved the puzzle in ${formatTime(completionTime)}!\n` +
-        `Mistakes: ${mistakeCount}` +
+        `You solved the puzzle in ${formatTime(completionTime)}!` +
         (isNewRecord ? '\n🎉 New best time!' : ''),
         [{ text: 'OK' }]
       );
@@ -151,8 +119,6 @@ export default function App() {
         setOriginalBoard(copyBoard(newBoard));
         setSelectedCell(null);
         setSelectedNumber(null);
-        setMistakes([]);
-        setMistakeCount(0);
         setGameComplete(false);
         setStartTime(Date.now());
         setGameTime(0);
@@ -230,7 +196,6 @@ export default function App() {
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
-                mistakes={mistakes}
               />
               
               <View style={styles.inputSection}>
@@ -246,7 +211,6 @@ export default function App() {
                 onDifficultyChange={handleDifficultyChange}
                 currentDifficulty={difficulty}
                 gameComplete={gameComplete}
-                mistakes={mistakeCount}
               />
             </>
           ) : (
