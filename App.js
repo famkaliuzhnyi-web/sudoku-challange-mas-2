@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, toggleNumberInCell, setDefinitiveNumber, getCellDisplayValue } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -22,6 +22,7 @@ export default function App() {
   const [bestTimes, setBestTimes] = useState(getBestTimes());
   const [startTime, setStartTime] = useState(null);
   const [gameTime, setGameTime] = useState(0);
+  const [noteMode, setNoteMode] = useState(false); // New state for note mode
 
   useEffect(() => {
     let interval;
@@ -46,6 +47,7 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
+    setNoteMode(false);
     setScreen('game');
   };
 
@@ -59,6 +61,7 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
+    setNoteMode(false);
     setScreen('game');
   };
 
@@ -66,8 +69,9 @@ export default function App() {
     // Don't allow selection of original cells
     if (originalBoard[row][col] !== 0) return;
     
-    // If clicking on a cell that already has a number, clear it
-    if (board[row][col] !== 0) {
+    // If clicking on a cell that already has a definitive number, clear it
+    const cellValue = board[row][col];
+    if (typeof cellValue === 'number' && cellValue !== 0) {
       const newBoard = copyBoard(board);
       newBoard[row][col] = 0;
       // Remove from mistakes if it was a mistake
@@ -87,29 +91,38 @@ export default function App() {
     
     const { row, col } = selectedCell;
     const newBoard = copyBoard(board);
+    const currentCellValue = board[row][col];
     
-    // Check if move is valid
-    if (isValidMove(newBoard, row, col, number)) {
-      newBoard[row][col] = number;
-      // Remove from mistakes if it was a mistake
+    if (noteMode) {
+      // Note mode: toggle number in/out of notes
+      newBoard[row][col] = toggleNumberInCell(currentCellValue, number);
+      // Remove from mistakes since we're just adding/removing notes
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
-      // Invalid move - mark as mistake
-      newBoard[row][col] = number;
-      setMistakes(prev => {
-        const existing = prev.find(m => m.row === row && m.col === col);
-        if (!existing) {
-          setMistakeCount(count => count + 1);
-          return [...prev, { row, col }];
-        }
-        return prev;
-      });
+      // Answer mode: place definitive number
+      // Check if move is valid
+      if (isValidMove(newBoard, row, col, number)) {
+        newBoard[row][col] = setDefinitiveNumber(number);
+        // Remove from mistakes if it was a mistake
+        setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
+      } else {
+        // Invalid move - mark as mistake
+        newBoard[row][col] = setDefinitiveNumber(number);
+        setMistakes(prev => {
+          const existing = prev.find(m => m.row === row && m.col === col);
+          if (!existing) {
+            setMistakeCount(count => count + 1);
+            return [...prev, { row, col }];
+          }
+          return prev;
+        });
+      }
     }
     
     setBoard(newBoard);
     
-    // Check if game is complete
-    if (isSolved(newBoard)) {
+    // Check if game is complete (only if not in note mode)
+    if (!noteMode && isSolved(newBoard)) {
       setGameComplete(true);
       setSelectedCell(null);
       setSelectedNumber(null);
@@ -207,7 +220,7 @@ export default function App() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <TouchableOpacity style={styles.pauseButton} onPress={handlePause}>
-              <Text style={styles.pauseButtonText}>⏸️ Pause</Text>
+              <Text style={styles.pauseButtonText}>Pause</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.title}>Sudoku</Text>
@@ -228,11 +241,33 @@ export default function App() {
                 mistakes={mistakes}
               />
               
-              <NumberInput
-                onNumberPress={handleNumberInput}
-                selectedCell={selectedCell}
-                selectedNumber={selectedNumber}
-              />
+              <View style={styles.inputSection}>
+                <View style={styles.modeToggle}>
+                  <TouchableOpacity
+                    style={[styles.modeButton, !noteMode && styles.modeButtonActive]}
+                    onPress={() => setNoteMode(false)}
+                  >
+                    <Text style={[styles.modeButtonText, !noteMode && styles.modeButtonTextActive]}>
+                      Answer
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.modeButton, noteMode && styles.modeButtonActive]}
+                    onPress={() => setNoteMode(true)}
+                  >
+                    <Text style={[styles.modeButtonText, noteMode && styles.modeButtonTextActive]}>
+                      Notes
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                
+                <NumberInput
+                  onNumberPress={handleNumberInput}
+                  selectedCell={selectedCell}
+                  selectedNumber={selectedNumber}
+                  noteMode={noteMode}
+                />
+              </View>
               
               <GameControls
                 onNewGame={() => startNewGame(difficulty)}
@@ -279,15 +314,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   pauseButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    backgroundColor: '#ff9800',
-    borderRadius: 6,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   pauseButtonText: {
-    color: '#fff',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
   },
   timer: {
     fontSize: 18,
@@ -309,5 +350,39 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#666',
     marginTop: 50,
+  },
+  inputSection: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    marginVertical: 15,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 2,
+  },
+  modeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    backgroundColor: 'transparent',
+  },
+  modeButtonActive: {
+    backgroundColor: '#fff',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+  },
+  modeButtonTextActive: {
+    color: '#333',
+    fontWeight: '600',
   },
 });

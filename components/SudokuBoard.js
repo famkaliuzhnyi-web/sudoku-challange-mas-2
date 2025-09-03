@@ -1,21 +1,56 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { getCellDisplayValue, isCellEmpty, isCellMultiValue } from '../utils/sudoku';
 
 const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, mistakes = [] }) => {
   const renderCell = (row, col) => {
-    const value = board[row][col];
+    const cellValue = board[row][col];
+    const displayValue = getCellDisplayValue(cellValue);
     const isOriginal = originalBoard[row][col] !== 0;
     const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
     const isMistake = mistakes.some(mistake => mistake.row === row && mistake.col === col);
-    const isNumberHighlighted = selectedNumber && value === selectedNumber;
+    const isEmpty = isCellEmpty(cellValue);
+    const isMultiValue = isCellMultiValue(cellValue);
     
-    // Highlight cells in the same row, column, or 3x3 box as selected cell
-    const isHighlighted = selectedCell && (
-      selectedCell.row === row ||
-      selectedCell.col === col ||
-      (Math.floor(selectedCell.row / 3) === Math.floor(row / 3) &&
-       Math.floor(selectedCell.col / 3) === Math.floor(col / 3))
+    // Check if this number is highlighted
+    const isNumberHighlighted = selectedNumber && (
+      (typeof displayValue === 'number' && displayValue === selectedNumber) ||
+      (Array.isArray(displayValue) && displayValue.includes(selectedNumber))
     );
+
+    const renderCellContent = () => {
+      if (isEmpty) {
+        return null;
+      } else if (isMultiValue) {
+        // Render multiple numbers in a 3x3 grid
+        return (
+          <View style={styles.multiNumberGrid}>
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+              <View key={num} style={styles.miniCell}>
+                <Text style={[
+                  styles.miniNumberText,
+                  displayValue.includes(num) && styles.visibleMiniNumber
+                ]}>
+                  {displayValue.includes(num) ? num : ''}
+                </Text>
+              </View>
+            ))}
+          </View>
+        );
+      } else {
+        // Render single number
+        return (
+          <Text style={[
+            styles.cellText,
+            isOriginal && styles.originalText,
+            !isOriginal && styles.userText,
+            isMistake && styles.mistakeText,
+          ]}>
+            {displayValue}
+          </Text>
+        );
+      }
+    };
 
     return (
       <TouchableOpacity
@@ -23,7 +58,6 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         style={[
           styles.cell,
           isSelected && styles.selectedCell,
-          isHighlighted && !isSelected && styles.highlightedCell,
           isNumberHighlighted && !isSelected && styles.numberHighlightedCell,
           isMistake && styles.mistakeCell,
           // Add borders for 3x3 box separation
@@ -33,14 +67,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         onPress={() => onCellPress(row, col)}
         disabled={isOriginal}
       >
-        <Text style={[
-          styles.cellText,
-          isOriginal && styles.originalText,
-          !isOriginal && value !== 0 && styles.userText,
-          isMistake && styles.mistakeText,
-        ]}>
-          {value !== 0 ? value : ''}
-        </Text>
+        {renderCellContent()}
       </TouchableOpacity>
     );
   };
@@ -112,6 +139,28 @@ const styles = StyleSheet.create({
   bottomBorder: {
     borderBottomWidth: 2,
     borderBottomColor: '#333',
+  },
+  multiNumberGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  miniCell: {
+    width: '33.33%',
+    height: '33.33%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  miniNumberText: {
+    fontSize: 8,
+    fontWeight: '400',
+    color: 'transparent',
+  },
+  visibleMiniNumber: {
+    color: '#666',
   },
 });
 
