@@ -78,7 +78,7 @@ function removeCells(board, cellsToRemove) {
  * @param {number|Array} cellValue - Cell value (number, array, or 0)
  * @returns {number|null} Single number or null
  */
-function getCellDefinitiveValue(cellValue) {
+export function getCellDefinitiveValue(cellValue) {
   if (typeof cellValue === 'number' && cellValue !== 0) {
     return cellValue;
   }
@@ -245,6 +245,53 @@ function shuffleArray(array) {
  */
 export function copyBoard(board) {
   return board.map(row => [...row]);
+}
+
+/**
+ * Count occurrences of each number on the board
+ * @param {Array} board - Current board state
+ * @returns {Object} Object with counts for each number (1-9)
+ */
+export function getNumberCounts(board) {
+  const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+  
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cellValue = board[row][col];
+      const definitiveValue = getCellDefinitiveValue(cellValue);
+      
+      if (definitiveValue !== null && definitiveValue >= 1 && definitiveValue <= 9) {
+        counts[definitiveValue]++;
+      }
+    }
+  }
+  
+  return counts;
+}
+
+/**
+ * Get array of numbers that are completed (appear 9 times) on the board
+ * @param {Array} board - Current board state
+ * @returns {Array} Array of completed numbers
+ */
+export function getCompletedNumbers(board) {
+  const counts = getNumberCounts(board);
+  return Object.keys(counts)
+    .filter(num => counts[num] === 9)
+    .map(num => parseInt(num));
+}
+
+/**
+ * Get the color for a specific number (1-9)
+ * @param {number} number - Number (1-9)
+ * @returns {string} Color hex code
+ */
+export function getNumberColor(number) {
+  const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#e91e63'];
+  if (number >= 1 && number <= 9) {
+    return colors[number - 1];
+  }
+  return '#333'; // Default color
 }
 
 /**

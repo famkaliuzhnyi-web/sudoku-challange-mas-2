@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const NumberInput = ({ onNumberPress, selectedCell, selectedNumber }) => {
+const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, completedNumbers = [] }) => {
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#34495e', '#e91e63'];
 
@@ -10,6 +10,8 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber }) => {
       <View style={styles.numberGrid}>
         {numbers.map((number, index) => {
           const isSelectedNumber = selectedNumber === number;
+          const isCompleted = completedNumbers.includes(number);
+          
           return (
             <TouchableOpacity
               key={number}
