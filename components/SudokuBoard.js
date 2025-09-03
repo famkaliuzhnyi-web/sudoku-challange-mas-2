@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   numberHighlightedCell: {
-    backgroundColor: '#fff9e6',
+    backgroundColor: '#e0e0e0',
   },
   mistakeCell: {
     backgroundColor: '#ffebee',

@@ -15,11 +15,9 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber }) => {
               key={number}
               style={[
                 styles.numberButton,
-                !selectedCell && styles.disabledButton,
-                { backgroundColor: isSelectedNumber ? '#fff9e6' : colors[index] }
+                { backgroundColor: isSelectedNumber ? '#f0f0f0' : colors[index] }
               ]}
               onPress={() => onNumberPress(number)}
-              disabled={!selectedCell}
             >
               <Text style={[
                 styles.numberText,
@@ -66,9 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
+
 });
 
 export default NumberInput;

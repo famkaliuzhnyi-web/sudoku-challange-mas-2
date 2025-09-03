@@ -76,29 +76,26 @@ export default function App() {
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
       setBoard(newBoard);
       setSelectedCell(null);
-      setSelectedNumber(null);
       return;
     }
     
-    setSelectedCell({ row, col });
-  };
-
-  const handleNumberInput = (number) => {
-    setSelectedNumber(number);
-    if (!selectedCell) return;
+    // If no number is selected, just select the cell
+    if (!selectedNumber) {
+      setSelectedCell({ row, col });
+      return;
+    }
     
-    const { row, col } = selectedCell;
+    // Place the selected number
     const newBoard = copyBoard(board);
     
-    // Place definitive number
     // Check if move is valid
-    if (isValidMove(newBoard, row, col, number)) {
-      newBoard[row][col] = setDefinitiveNumber(number);
+    if (isValidMove(newBoard, row, col, selectedNumber)) {
+      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
       // Remove from mistakes if it was a mistake
       setMistakes(prev => prev.filter(m => !(m.row === row && m.col === col)));
     } else {
       // Invalid move - mark as mistake
-      newBoard[row][col] = setDefinitiveNumber(number);
+      newBoard[row][col] = setDefinitiveNumber(selectedNumber);
       setMistakes(prev => {
         const existing = prev.find(m => m.row === row && m.col === col);
         if (!existing) {
@@ -110,6 +107,7 @@ export default function App() {
     }
     
     setBoard(newBoard);
+    setSelectedCell(null);
     
     // Check if game is complete
     if (isSolved(newBoard)) {
@@ -136,6 +134,10 @@ export default function App() {
         [{ text: 'OK' }]
       );
     }
+  };
+
+  const handleNumberInput = (number) => {
+    setSelectedNumber(number);
   };
 
   const handleDifficultyChange = (newDifficulty) => {
