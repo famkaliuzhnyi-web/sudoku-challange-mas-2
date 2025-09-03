@@ -1,15 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { getCellDisplayValue, isCellEmpty, isCellMultiValue } from '../utils/sudoku';
+import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue } from '../utils/sudoku';
 
-const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress }) => {
+const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [] }) => {
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
+    const definitiveValue = getCellDefinitiveValue(cellValue);
     const isOriginal = originalBoard[row][col] !== 0;
     const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
     const isEmpty = isCellEmpty(cellValue);
     const isMultiValue = isCellMultiValue(cellValue);
+    const isCompletedNumber = definitiveValue !== null && completedNumbers.includes(definitiveValue);
     
     // Check if this number is highlighted
     const isNumberHighlighted = selectedNumber && (
@@ -43,6 +45,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
             styles.cellText,
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
+            isCompletedNumber && styles.completedNumberText,
           ]}>
             {displayValue}
           </Text>
@@ -56,7 +59,8 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         style={[
           styles.cell,
           isSelected && styles.selectedCell,
-          isNumberHighlighted && !isSelected && styles.numberHighlightedCell,
+          isCompletedNumber && !isSelected && styles.completedNumberCell,
+          isNumberHighlighted && !isSelected && !isCompletedNumber && styles.numberHighlightedCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
           row % 3 === 2 && row !== 8 && styles.bottomBorder,
@@ -110,6 +114,9 @@ const styles = StyleSheet.create({
   numberHighlightedCell: {
     backgroundColor: '#e0e0e0',
   },
+  completedNumberCell: {
+    backgroundColor: '#d4edda',
+  },
   cellText: {
     fontSize: 16,
     fontWeight: '600',
@@ -122,6 +129,10 @@ const styles = StyleSheet.create({
   userText: {
     color: '#333',
     fontWeight: '300',
+  },
+  completedNumberText: {
+    color: '#155724',
+    fontWeight: '600',
   },
   rightBorder: {
     borderRightWidth: 2,

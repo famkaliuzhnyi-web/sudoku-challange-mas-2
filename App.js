@@ -196,6 +196,7 @@ export default function App() {
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
+                completedNumbers={getCompletedNumbers(board)}
               />
               
               <View style={styles.inputSection}>

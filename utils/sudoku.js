@@ -78,7 +78,7 @@ function removeCells(board, cellsToRemove) {
  * @param {number|Array} cellValue - Cell value (number, array, or 0)
  * @returns {number|null} Single number or null
  */
-function getCellDefinitiveValue(cellValue) {
+export function getCellDefinitiveValue(cellValue) {
   if (typeof cellValue === 'number' && cellValue !== 0) {
     return cellValue;
   }
