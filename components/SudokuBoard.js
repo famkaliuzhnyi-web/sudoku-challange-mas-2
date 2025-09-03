@@ -8,14 +8,6 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
     const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
     const isMistake = mistakes.some(mistake => mistake.row === row && mistake.col === col);
     const isNumberHighlighted = selectedNumber && value === selectedNumber;
-    
-    // Highlight cells in the same row, column, or 3x3 box as selected cell
-    const isHighlighted = selectedCell && (
-      selectedCell.row === row ||
-      selectedCell.col === col ||
-      (Math.floor(selectedCell.row / 3) === Math.floor(row / 3) &&
-       Math.floor(selectedCell.col / 3) === Math.floor(col / 3))
-    );
 
     return (
       <TouchableOpacity
@@ -23,7 +15,6 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         style={[
           styles.cell,
           isSelected && styles.selectedCell,
-          isHighlighted && !isSelected && styles.highlightedCell,
           isNumberHighlighted && !isSelected && styles.numberHighlightedCell,
           isMistake && styles.mistakeCell,
           // Add borders for 3x3 box separation

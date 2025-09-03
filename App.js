@@ -207,7 +207,7 @@ export default function App() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <TouchableOpacity style={styles.pauseButton} onPress={handlePause}>
-              <Text style={styles.pauseButtonText}>⏸️ Pause</Text>
+              <Text style={styles.pauseButtonText}>Pause</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.title}>Sudoku</Text>
@@ -279,15 +279,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   pauseButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    backgroundColor: '#ff9800',
-    borderRadius: 6,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   pauseButtonText: {
-    color: '#fff',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
   },
   timer: {
     fontSize: 18,

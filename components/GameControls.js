@@ -43,19 +43,6 @@ const GameControls = ({ onNewGame, onDifficultyChange, currentDifficulty, gameCo
           </Text>
         </View>
       )}
-
-      <View style={styles.difficultyContainer}>
-        <Text style={styles.sectionTitle}>Difficulty:</Text>
-        <View style={styles.difficultyRow}>
-          {Object.entries(difficulties).map(([key, config]) => 
-            renderDifficultyButton(key, config)
-          )}
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.newGameButton} onPress={handleNewGame}>
-        <Text style={styles.newGameText}>New Game</Text>
-      </TouchableOpacity>
     </View>
   );
 };
