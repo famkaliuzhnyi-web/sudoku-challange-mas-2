@@ -310,7 +310,17 @@ export function getCorrectlyCompletedNumbers(board) {
  * @returns {string} Color hex code
  */
 export function getNumberColor(number) {
-  const colors = ['#ffb3ba', '#bae1ff', '#baffc9', '#ffffba', '#d4a5d4', '#b3ffe0', '#ffdfba', '#e0e0e0', '#ffb3d9'];
+  const colors = [
+    '#F5F5DC', // 1 - Light Yellow
+    '#FFFF99', // 2 - Lemon 
+    '#FFB347', // 3 - Mandarin
+    '#FFCBA4', // 4 - Peach
+    '#FA8072', // 5 - Salmon
+    '#FF69B4', // 6 - Flamingo
+    '#FFB6C1', // 7 - Baby Pink
+    '#DDA0DD', // 8 - Fairyfloss
+    '#E6E6FA'  // 9 - Lavender
+  ];
   if (number >= 1 && number <= 9) {
     return colors[number - 1];
   }
