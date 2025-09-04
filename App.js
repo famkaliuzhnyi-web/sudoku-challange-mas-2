@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell, getCompletedNumbers, getNumberColor, findConflictingCells } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell, getCompletedNumbers, getCorrectlyCompletedNumbers, getNumberColor, findConflictingCells } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -205,7 +205,7 @@ export default function App() {
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
-                completedNumbers={getCompletedNumbers(board)}
+                completedNumbers={getCorrectlyCompletedNumbers(board)}
                 gameComplete={gameComplete}
                 conflictingCells={conflictingCells}
               />
@@ -215,7 +215,7 @@ export default function App() {
                   onNumberPress={handleNumberInput}
                   selectedCell={selectedCell}
                   selectedNumber={selectedNumber}
-                  completedNumbers={board ? getCompletedNumbers(board) : []}
+                  completedNumbers={board ? getCorrectlyCompletedNumbers(board) : []}
                 />
               </View>
               
