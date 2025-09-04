@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cell: {
-    width: 35,
-    height: 35,
+    width: 45,
+    height: 45,
     borderWidth: 0.5,
     borderColor: '#999',
     justifyContent: 'center',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d4edda',
   },
   cellText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     color: '#333',
   },
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   miniNumberText: {
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: '400',
     color: 'transparent',
   },

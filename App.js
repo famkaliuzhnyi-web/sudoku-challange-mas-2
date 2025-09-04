@@ -280,9 +280,10 @@ const styles = StyleSheet.create({
   },
   gameContainer: {
     flex: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: 3,
     paddingTop: 15,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: {
     fontSize: 18,
@@ -292,5 +293,6 @@ const styles = StyleSheet.create({
   inputSection: {
     alignItems: 'center',
     width: '100%',
+    marginTop: 20,
   },
 });

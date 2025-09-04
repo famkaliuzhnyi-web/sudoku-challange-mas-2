@@ -38,7 +38,7 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, completedNum
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 5,
   },
   numberGrid: {
     flexDirection: 'row',
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   numberButton: {
-    width: 32,
-    height: 45,
+    width: 40,
+    height: 55,
     margin: 1,
     borderRadius: 6,
     borderWidth: 1,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   numberText: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '600',
     color: '#333',
   },
