@@ -282,6 +282,29 @@ export function getCompletedNumbers(board) {
 }
 
 /**
+ * Get array of numbers that are completed AND correctly placed (no conflicts)
+ * @param {Array} board - Current board state
+ * @returns {Array} Array of correctly completed numbers
+ */
+export function getCorrectlyCompletedNumbers(board) {
+  const completedNumbers = getCompletedNumbers(board);
+  const conflictingCells = findConflictingCells(board);
+  
+  return completedNumbers.filter(num => {
+    // Check if any cell with this number is in conflicts
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        const cellValue = getCellDefinitiveValue(board[row][col]);
+        if (cellValue === num && conflictingCells.has(`${row},${col}`)) {
+          return false; // This number has conflicts, so it's not correctly completed
+        }
+      }
+    }
+    return true; // No conflicts found for this number
+  });
+}
+
+/**
  * Get the color for a specific number (1-9)
  * @param {number} number - Number (1-9)
  * @returns {string} Color hex code
