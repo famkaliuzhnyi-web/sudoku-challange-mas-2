@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   gameContainer: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 3,
     paddingTop: 15,
     alignItems: 'center',
     justifyContent: 'center',
