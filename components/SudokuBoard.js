@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue, getNumberColor } from '../utils/sudoku';
 
-const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [] }) => {
+const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [], gameComplete = false }) => {
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
@@ -12,6 +12,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
     const isEmpty = isCellEmpty(cellValue);
     const isMultiValue = isCellMultiValue(cellValue);
     const isCompletedNumber = definitiveValue !== null && completedNumbers.includes(definitiveValue);
+    
+    // Determine if this cell should have colored background
+    const shouldShowColoredBackground = gameComplete 
+      ? definitiveValue !== null  // Show all colors when game is complete
+      : isCompletedNumber && selectedNumber === definitiveValue; // Show color only for selected completed number
     
     // Check if this number is highlighted
     const isNumberHighlighted = selectedNumber && (
@@ -45,7 +50,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
             styles.cellText,
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
-            isCompletedNumber && styles.completedNumberText,
+            shouldShowColoredBackground && styles.completedNumberText,
           ]}>
             {displayValue}
           </Text>
@@ -59,8 +64,8 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         style={[
           styles.cell,
           isSelected && styles.selectedCell,
-          isCompletedNumber && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
-          isNumberHighlighted && !isSelected && !isCompletedNumber && styles.numberHighlightedCell,
+          shouldShowColoredBackground && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
+          isNumberHighlighted && !isSelected && !shouldShowColoredBackground && styles.numberHighlightedCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
           row % 3 === 2 && row !== 8 && styles.bottomBorder,
@@ -97,8 +102,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cell: {
-    width: 35,
-    height: 35,
+    width: 45,
+    height: 45,
     borderWidth: 0.5,
     borderColor: '#999',
     justifyContent: 'center',
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d4edda',
   },
   cellText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '600',
     color: '#333',
   },
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   miniNumberText: {
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: '400',
     color: 'transparent',
   },
