@@ -257,10 +257,12 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
     alignItems: 'flex-start',
+    marginLeft: 40,
   },
   headerRight: {
     flex: 1,
     alignItems: 'flex-end',
+    marginRight: 40,
   },
   pauseButton: {
     paddingVertical: 15,
