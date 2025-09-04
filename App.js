@@ -99,7 +99,7 @@ export default function App() {
         'Congratulations!',
         `You solved the puzzle in ${formatTime(completionTime)}!` +
         (isNewRecord ? '\n🎉 New best time!' : ''),
-        [{ text: 'OK' }]
+        [{ text: 'OK', onPress: handleQuit }]
       );
     }
   };
