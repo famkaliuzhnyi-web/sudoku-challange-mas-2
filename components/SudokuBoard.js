@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue, getNumberColor } from '../utils/sudoku';
 
-const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [], gameComplete = false }) => {
+const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [], gameComplete = false, conflictingCells = new Set() }) => {
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
@@ -12,6 +12,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
     const isEmpty = isCellEmpty(cellValue);
     const isMultiValue = isCellMultiValue(cellValue);
     const isCompletedNumber = definitiveValue !== null && completedNumbers.includes(definitiveValue);
+    const isConflicting = conflictingCells.has(`${row},${col}`);
     
     // Determine if this cell should have colored background
     const shouldShowColoredBackground = gameComplete 
@@ -35,7 +36,8 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
               <View key={num} style={styles.miniCell}>
                 <Text style={[
                   styles.miniNumberText,
-                  displayValue.includes(num) && styles.visibleMiniNumber
+                  displayValue.includes(num) && styles.visibleMiniNumber,
+                  isConflicting && displayValue.includes(num) && styles.conflictingMiniNumber
                 ]}>
                   {displayValue.includes(num) ? num : ''}
                 </Text>
@@ -51,6 +53,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
             shouldShowColoredBackground && styles.completedNumberText,
+            isConflicting && styles.conflictingText,
           ]}>
             {displayValue}
           </Text>
@@ -139,6 +142,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
+  conflictingText: {
+    color: '#e74c3c', // Red color for conflicts
+    fontWeight: '700',
+  },
   rightBorder: {
     borderRightWidth: 2,
     borderRightColor: '#333',
@@ -168,6 +175,9 @@ const styles = StyleSheet.create({
   },
   visibleMiniNumber: {
     color: '#666',
+  },
+  conflictingMiniNumber: {
+    color: '#e74c3c', // Red color for conflicts in mini numbers
   },
 });
 

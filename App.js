@@ -6,7 +6,7 @@ import NumberInput from './components/NumberInput';
 import GameControls from './components/GameControls';
 import MainMenuScreen from './components/MainMenuScreen';
 import PauseScreen from './components/PauseScreen';
-import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell, getCompletedNumbers, getNumberColor } from './utils/sudoku';
+import { generateSudoku, isValidMove, isSolved, copyBoard, getDifficultySettings, isCellEmpty, isCellMultiValue, setDefinitiveNumber, toggleNumberInCell, getCompletedNumbers, getNumberColor, findConflictingCells } from './utils/sudoku';
 import { getBestTimes, setBestTime } from './utils/storage';
 
 export default function App() {
@@ -21,6 +21,7 @@ export default function App() {
   const [bestTimes, setBestTimes] = useState(getBestTimes());
   const [startTime, setStartTime] = useState(null);
   const [gameTime, setGameTime] = useState(0);
+  const [conflictingCells, setConflictingCells] = useState(new Set());
 
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
+    setConflictingCells(new Set());
     setScreen('game');
   };
 
@@ -55,6 +57,7 @@ export default function App() {
     setGameComplete(false);
     setStartTime(Date.now());
     setGameTime(0);
+    setConflictingCells(new Set());
     setScreen('game');
   };
 
@@ -77,6 +80,10 @@ export default function App() {
     
     setBoard(newBoard);
     setSelectedCell(null);
+    
+    // Update conflicting cells
+    const conflicts = findConflictingCells(newBoard);
+    setConflictingCells(conflicts);
     
     // Check if game is complete
     if (isSolved(newBoard)) {
@@ -122,6 +129,7 @@ export default function App() {
         setGameComplete(false);
         setStartTime(Date.now());
         setGameTime(0);
+        setConflictingCells(new Set());
       }, 100);
     }
   };
@@ -138,6 +146,7 @@ export default function App() {
     setScreen('menu');
     setBoard(null);
     setOriginalBoard(null);
+    setConflictingCells(new Set());
   };
 
   const formatTime = (timeInSeconds) => {
@@ -198,6 +207,7 @@ export default function App() {
                 onCellPress={handleCellPress}
                 completedNumbers={getCompletedNumbers(board)}
                 gameComplete={gameComplete}
+                conflictingCells={conflictingCells}
               />
               
               <View style={styles.inputSection}>

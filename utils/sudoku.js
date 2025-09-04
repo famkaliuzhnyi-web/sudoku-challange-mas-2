@@ -295,6 +295,57 @@ export function getNumberColor(number) {
 }
 
 /**
+ * Find all cells that have conflicting numbers (violate Sudoku rules)
+ * @param {Array} board - Current board state
+ * @returns {Set} Set of cell coordinates as strings "row,col"
+ */
+export function findConflictingCells(board) {
+  const conflicts = new Set();
+
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cellValue = getCellDefinitiveValue(board[row][col]);
+      
+      if (cellValue !== null) {
+        // Check if this number conflicts with any other cells
+        if (!isValidMove(board, row, col, cellValue)) {
+          conflicts.add(`${row},${col}`);
+          
+          // Also mark the conflicting cells
+          // Check row conflicts
+          for (let c = 0; c < 9; c++) {
+            if (c !== col && getCellDefinitiveValue(board[row][c]) === cellValue) {
+              conflicts.add(`${row},${c}`);
+            }
+          }
+          
+          // Check column conflicts
+          for (let r = 0; r < 9; r++) {
+            if (r !== row && getCellDefinitiveValue(board[r][col]) === cellValue) {
+              conflicts.add(`${r},${col}`);
+            }
+          }
+          
+          // Check 3x3 box conflicts
+          const boxRow = Math.floor(row / 3) * 3;
+          const boxCol = Math.floor(col / 3) * 3;
+          
+          for (let r = boxRow; r < boxRow + 3; r++) {
+            for (let c = boxCol; c < boxCol + 3; c++) {
+              if ((r !== row || c !== col) && getCellDefinitiveValue(board[r][c]) === cellValue) {
+                conflicts.add(`${r},${c}`);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
  * Get difficulty settings
  * @returns {Object} Difficulty configurations
  */
