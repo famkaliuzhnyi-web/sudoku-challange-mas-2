@@ -197,6 +197,7 @@ export default function App() {
                 selectedNumber={selectedNumber}
                 onCellPress={handleCellPress}
                 completedNumbers={getCompletedNumbers(board)}
+                gameComplete={gameComplete}
               />
               
               <View style={styles.inputSection}>
