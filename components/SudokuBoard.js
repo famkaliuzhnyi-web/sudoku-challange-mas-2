@@ -1,8 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue, getNumberColor } from '../utils/sudoku';
 
 const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [], gameComplete = false, conflictingCells = new Set() }) => {
+  // Calculate responsive cell size based on screen width
+  const screenWidth = Dimensions.get('window').width;
+  const maxCellSize = 45;
+  const boardPadding = 40; // Account for margins and padding
+  const cellSize = Math.min(maxCellSize, (screenWidth - boardPadding) / 9);
+  const fontSize = Math.max(12, cellSize * 0.4); // Scale font size with cell size
+  const miniFontSize = Math.max(6, cellSize * 0.2); // Scale mini font size
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
@@ -39,6 +46,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
               <View key={num} style={styles.miniCell}>
                 <Text style={[
                   styles.miniNumberText,
+                  { fontSize: miniFontSize },
                   displayValue.includes(num) && styles.visibleMiniNumber,
                   isConflicting && displayValue.includes(num) && styles.conflictingMiniNumber
                 ]}>
@@ -53,6 +61,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         return (
           <Text style={[
             styles.cellText,
+            { fontSize: fontSize },
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
             shouldShowColoredBackground && styles.completedNumberText,
@@ -70,6 +79,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         key={`${row}-${col}`}
         style={[
           styles.cell,
+          { width: cellSize, height: cellSize },
           isSelected && styles.selectedCell,
           shouldShowColoredBackground && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
           isNumberHighlighted && !isSelected && !shouldShowColoredBackground && !shouldShowColoredText && styles.numberHighlightedCell,
@@ -109,8 +119,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cell: {
-    width: 45,
-    height: 45,
     borderWidth: 0.5,
     borderColor: '#999',
     justifyContent: 'center',
@@ -130,7 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#d4edda',
   },
   cellText: {
-    fontSize: 20,
     fontWeight: '600',
     color: '#333',
   },
@@ -173,7 +180,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   miniNumberText: {
-    fontSize: 10,
     fontWeight: '400',
     color: 'transparent',
   },
