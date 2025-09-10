@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   gameContainer: {
     flex: 1,
-    paddingTop: 15,
+    paddingTop: 10,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 5,
@@ -305,6 +305,6 @@ const styles = StyleSheet.create({
   inputSection: {
     alignItems: 'center',
     width: '100%',
-    marginTop: 20,
+    marginTop: 15,
   },
 });

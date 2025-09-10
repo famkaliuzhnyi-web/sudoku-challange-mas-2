@@ -1,8 +1,26 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { getCellDisplayValue, isCellEmpty, isCellMultiValue, getCellDefinitiveValue, getNumberColor } from '../utils/sudoku';
 
 const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCellPress, completedNumbers = [], gameComplete = false, conflictingCells = new Set() }) => {
+  // Calculate responsive cell size based on screen width
+  const screenWidth = Dimensions.get('window').width;
+  const maxCellSize = 45;
+  
+  // Special sizing for iPhone screens (1179 pixel width) with 3px margins
+  let cellSize;
+  if (screenWidth === 1179) {
+    // For iPhone screen, use smaller size with 3px margins on each side
+    const availableWidth = screenWidth - 6; // 3px margin left + 3px margin right
+    cellSize = Math.min(38, availableWidth / 9); // Smaller max size for iPhone
+  } else {
+    // Default responsive calculation for other screens
+    const boardPadding = 40; // Account for margins and padding
+    cellSize = Math.min(maxCellSize, (screenWidth - boardPadding) / 9);
+  }
+  
+  const fontSize = Math.max(12, cellSize * 0.4); // Scale font size with cell size
+  const miniFontSize = Math.max(6, cellSize * 0.2); // Scale mini font size
   const renderCell = (row, col) => {
     const cellValue = board[row][col];
     const displayValue = getCellDisplayValue(cellValue);
@@ -16,8 +34,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
     
     // Determine if this cell should have colored background
     const shouldShowColoredBackground = gameComplete 
-      ? definitiveValue !== null  // Show all colors when game is complete
+      ? false  // Don't show colored backgrounds when game is complete
       : isCompletedNumber && selectedNumber === definitiveValue; // Show color only for selected completed number
+    
+    // Determine if this cell should have colored text (when game is complete)
+    const shouldShowColoredText = gameComplete && definitiveValue !== null;
     
     // Check if this number is highlighted
     const isNumberHighlighted = selectedNumber && (
@@ -36,6 +57,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
               <View key={num} style={styles.miniCell}>
                 <Text style={[
                   styles.miniNumberText,
+                  { fontSize: miniFontSize },
                   displayValue.includes(num) && styles.visibleMiniNumber,
                   isConflicting && displayValue.includes(num) && styles.conflictingMiniNumber
                 ]}>
@@ -50,9 +72,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         return (
           <Text style={[
             styles.cellText,
+            { fontSize: fontSize },
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
             shouldShowColoredBackground && styles.completedNumberText,
+            shouldShowColoredText && { color: getNumberColor(definitiveValue) },
             isConflicting && styles.conflictingText,
           ]}>
             {displayValue}
@@ -66,9 +90,10 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
         key={`${row}-${col}`}
         style={[
           styles.cell,
+          { width: cellSize, height: cellSize },
           isSelected && styles.selectedCell,
           shouldShowColoredBackground && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
-          isNumberHighlighted && !isSelected && !shouldShowColoredBackground && styles.numberHighlightedCell,
+          isNumberHighlighted && !isSelected && !shouldShowColoredBackground && !shouldShowColoredText && styles.numberHighlightedCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
           row % 3 === 2 && row !== 8 && styles.bottomBorder,
@@ -88,7 +113,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
   );
 
   return (
-    <View style={styles.board}>
+    <View style={[
+      styles.board,
+      // Add 3px margins for iPhone screens (1179 pixel width)
+      screenWidth === 1179 && { marginLeft: 3, marginRight: 3 }
+    ]}>
       {Array(9).fill(null).map((_, rowIndex) => renderRow(rowIndex))}
     </View>
   );
@@ -105,8 +134,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   cell: {
-    width: 45,
-    height: 45,
     borderWidth: 0.5,
     borderColor: '#999',
     justifyContent: 'center',
@@ -126,7 +153,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#d4edda',
   },
   cellText: {
-    fontSize: 20,
     fontWeight: '600',
     color: '#333',
   },
@@ -169,7 +195,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   miniNumberText: {
-    fontSize: 10,
     fontWeight: '400',
     color: 'transparent',
   },
