@@ -16,7 +16,7 @@ const NumberInput = ({ onNumberPress, selectedCell, selectedNumber, completedNum
   if (screenWidth === 1179) {
     // For iPhone screen, use smaller size with 3px margins on each side
     const availableWidth = screenWidth - 6; // 3px margin left + 3px margin right
-    buttonWidth = Math.min(35, availableWidth / buttonsPerRow); // Smaller max size for iPhone
+    buttonWidth = Math.min(40, availableWidth / buttonsPerRow); // Smaller max size for iPhone
     buttonHeight = Math.max(40, buttonWidth * 1.2); // Maintain aspect ratio but ensure minimum height
     fontSize = Math.max(12, buttonWidth * 0.5); // Scale font size with button size
   } else {
