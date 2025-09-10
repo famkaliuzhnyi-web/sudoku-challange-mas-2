@@ -16,8 +16,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
     
     // Determine if this cell should have colored background
     const shouldShowColoredBackground = gameComplete 
-      ? definitiveValue !== null  // Show all colors when game is complete
+      ? false  // Don't show colored backgrounds when game is complete
       : isCompletedNumber && selectedNumber === definitiveValue; // Show color only for selected completed number
+    
+    // Determine if this cell should have colored text (when game is complete)
+    const shouldShowColoredText = gameComplete && definitiveValue !== null;
     
     // Check if this number is highlighted
     const isNumberHighlighted = selectedNumber && (
@@ -53,6 +56,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
             isOriginal && styles.originalText,
             !isOriginal && styles.userText,
             shouldShowColoredBackground && styles.completedNumberText,
+            shouldShowColoredText && { color: getNumberColor(definitiveValue) },
             isConflicting && styles.conflictingText,
           ]}>
             {displayValue}
@@ -68,7 +72,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
           styles.cell,
           isSelected && styles.selectedCell,
           shouldShowColoredBackground && !isSelected && { backgroundColor: getNumberColor(definitiveValue) },
-          isNumberHighlighted && !isSelected && !shouldShowColoredBackground && styles.numberHighlightedCell,
+          isNumberHighlighted && !isSelected && !shouldShowColoredBackground && !shouldShowColoredText && styles.numberHighlightedCell,
           // Add borders for 3x3 box separation
           col % 3 === 2 && col !== 8 && styles.rightBorder,
           row % 3 === 2 && row !== 8 && styles.bottomBorder,
