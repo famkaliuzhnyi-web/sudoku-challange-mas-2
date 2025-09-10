@@ -12,7 +12,7 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
   if (screenWidth === 1179) {
     // For iPhone screen, use smaller size with 3px margins on each side
     const availableWidth = screenWidth - 6; // 3px margin left + 3px margin right
-    cellSize = Math.min(38, availableWidth / 9); // Smaller max size for iPhone
+    cellSize = Math.min(40, availableWidth / 9); // Smaller max size for iPhone
   } else {
     // Default responsive calculation for other screens
     const boardPadding = 40; // Account for margins and padding
