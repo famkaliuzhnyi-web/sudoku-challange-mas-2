@@ -311,15 +311,15 @@ export function getCorrectlyCompletedNumbers(board) {
  */
 export function getNumberColor(number) {
   const colors = [
-    '#F5F5DC', // 1 - Light Yellow
-    '#FFFF99', // 2 - Lemon 
-    '#FFB347', // 3 - Mandarin
-    '#FFCBA4', // 4 - Peach
-    '#FA8072', // 5 - Salmon
-    '#FF69B4', // 6 - Flamingo
-    '#FFB6C1', // 7 - Baby Pink
-    '#DDA0DD', // 8 - Fairyfloss
-    '#E6E6FA'  // 9 - Lavender
+    '#dcbc6e', // 1
+    '#66c5cc', // 2
+    '#f89c74', // 3
+    '#87c55f', // 4
+    '#fe88b1', // 5
+    '#b3b3b3', // 6
+    '#c9db74', // 7
+    '#dcb0f2', // 8
+    '#f49595'  // 9
   ];
   if (number >= 1 && number <= 9) {
     return colors[number - 1];
