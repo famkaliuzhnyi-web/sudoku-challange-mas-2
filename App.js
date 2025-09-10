@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+    marginLeft: 5,
   },
   pauseButtonText: {
     fontSize: 18,
@@ -281,6 +282,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#2196f3',
+    marginRight: 5,
   },
   title: {
     fontSize: 24,
@@ -292,6 +294,8 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 5,
+    marginRight: 5,
   },
   loadingText: {
     fontSize: 18,
