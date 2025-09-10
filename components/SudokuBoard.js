@@ -6,8 +6,19 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
   // Calculate responsive cell size based on screen width
   const screenWidth = Dimensions.get('window').width;
   const maxCellSize = 45;
-  const boardPadding = 40; // Account for margins and padding
-  const cellSize = Math.min(maxCellSize, (screenWidth - boardPadding) / 9);
+  
+  // Special sizing for iPhone screens (1179 pixel width) with 3px margins
+  let cellSize;
+  if (screenWidth === 1179) {
+    // For iPhone screen, use smaller size with 3px margins on each side
+    const availableWidth = screenWidth - 6; // 3px margin left + 3px margin right
+    cellSize = Math.min(38, availableWidth / 9); // Smaller max size for iPhone
+  } else {
+    // Default responsive calculation for other screens
+    const boardPadding = 40; // Account for margins and padding
+    cellSize = Math.min(maxCellSize, (screenWidth - boardPadding) / 9);
+  }
+  
   const fontSize = Math.max(12, cellSize * 0.4); // Scale font size with cell size
   const miniFontSize = Math.max(6, cellSize * 0.2); // Scale mini font size
   const renderCell = (row, col) => {
@@ -102,7 +113,11 @@ const SudokuBoard = ({ board, originalBoard, selectedCell, selectedNumber, onCel
   );
 
   return (
-    <View style={styles.board}>
+    <View style={[
+      styles.board,
+      // Add 3px margins for iPhone screens (1179 pixel width)
+      screenWidth === 1179 && { marginLeft: 3, marginRight: 3 }
+    ]}>
       {Array(9).fill(null).map((_, rowIndex) => renderRow(rowIndex))}
     </View>
   );
